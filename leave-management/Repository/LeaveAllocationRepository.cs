@@ -1,5 +1,6 @@
 ﻿using leave_management.Contracts;
 using leave_management.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +16,19 @@ namespace leave_management.Repository
         {
             _db = db;
         }
-         public bool Create(LeaveAllocation entity)
+
+        public bool CheckAllocation(int leavetypeid, string employeeid)
+        {
+            var period = DateTime.Now.Year;
+            return FindAll()
+                .Where(q => q.EmployeeId == employeeid && q.LeaveTypeId == leavetypeid && q.Period == period)
+                .Any();
+        }
+
+        public bool Create(LeaveAllocation entity)
         {
             _db.LeaveAllocations.Add(entity);
                 return Save();
-
         }
 
         public bool Delete(LeaveAllocation entity)
@@ -30,15 +39,30 @@ namespace leave_management.Repository
 
         public ICollection<LeaveAllocation> FindAll()
         {
-          var LeaveAllocations = _db.LeaveAllocations.ToList();
+          var LeaveAllocations = _db.LeaveAllocations
+                .Include(q => q.LeaveType)
+                .Include(q => q.Employee)
+                .ToList();
             return LeaveAllocations;
         }
 
         public LeaveAllocation FindById(int Id)
         {
-            var LeaveAllocations = _db.LeaveAllocations.Find(Id);
+            var LeaveAllocations = _db.LeaveAllocations
+                .Include(q => q.LeaveType)
+                .Include(q => q.Employee)
+                .FirstOrDefault(q => q.Id == Id);
             return LeaveAllocations;
         }
+
+        public ICollection<LeaveAllocation> GetLeaveAllocationsByEmployee(string id)
+        {
+            var period = DateTime.Now.Year;
+            return FindAll()
+                    .Where(q => q.EmployeeId == id && q.Period == period)
+                    .ToList();
+        }
+
         public bool isExists(int Id)
         {
             var exists = _db.LeaveAllocations.Any(q => q.Id == Id);

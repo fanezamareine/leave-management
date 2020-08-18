@@ -17,7 +17,6 @@ namespace leave_management.Controllers
     {
         private readonly ILeaveTypeRepository _repo;
         private readonly IMapper _mapper;
-        
 
         public object Id { get; private set; }
 
@@ -26,7 +25,7 @@ namespace leave_management.Controllers
             _repo = repo;
             _mapper = mapper;
         }
-        [Authorize]
+       
         // GET: LeaveTypes
         public ActionResult Index()
         {
@@ -87,7 +86,7 @@ namespace leave_management.Controllers
         // GET: LeaveTypesController/Edit/5
         public ActionResult Edit(int id)
         {
-            if (!_repo.isExists(Id))
+            if (!_repo.isExists(id))
             {
                 return NotFound();
             }
@@ -159,7 +158,7 @@ namespace leave_management.Controllers
                 {
                     return View(model);
                 }
-                return RedirectToAction(nameof(Index));
+          C:\Users\Faneza Mareine David\source\repos\leave-management\leave-management\Controllers\LeaveTypesController.cs      return RedirectToAction(nameof(Index));
             }
             catch
             {
